@@ -1,3 +1,4 @@
+```
 wifi-hotspot-billing/
 ├── 📂 public/              # Captive Portal pages
 │   ├── index.html          # Phone input
@@ -14,3 +15,4 @@ wifi-hotspot-billing/
 ├── 📄 .env                 # Environment variables
 ├── 📄 package.json         # Dependencies
 └── 📄 render.yaml          # Render deployment
+```
