@@ -7,7 +7,7 @@
 | Item | Details |
 |------|---------|
 | **Project Name** | BIGST4CK Wi‑Fi Hotspot Billing System |
-| **Version** | 1.0.0 |
+| **Version** | 1.0.1 |
 | **Date** | August 2026 |
 | **Author** | bigmanjtech™ |
 | **Status** | Draft / Planning |
@@ -31,6 +31,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | Captive Portal (custom website) | Default MikroTik login page |
 | PostgreSQL database | Other database types |
 | Render.com deployment | On‑premise server deployment |
+| **Wi‑Fi range extension (5m → 100m)** | **Beyond 100m (for now)** |
 
 ### 1.3 Business Goals
 - ✅ Sell internet access by the hour
@@ -38,6 +39,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 - ✅ Secure – no password sharing
 - ✅ Scalable – from 10 to 10,000 users
 - ✅ Profitable – low startup cost, fast ROI
+- ✅ **Cover a 100m radius outdoor area** (yard, parking lot, etc.)
 
 ---
 
@@ -50,6 +52,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | **MikroTik** | Hardware Provider | Router and HotSpot functionality |
 | **SonicPesa** | Payment Gateway | Process payments via USSD |
 | **Render.com** | Hosting Provider | Host website, backend, and database |
+| **Outdoor AP Manufacturer** | Hardware Provider | Provide outdoor Wi‑Fi coverage hardware |
 
 ---
 
@@ -159,7 +162,32 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | TR‑H06 | Concurrent Users | Minimum 15 users |
 | TR‑H07 | Power Supply | 12V 1.5A DC adapter |
 
-### 5.2 Software Requirements
+### 5.2 Wi‑Fi Range Extension (Outdoor AP)
+
+| ID | Requirement | Specification |
+|----|-------------|---------------|
+| TR‑WE01 | Outdoor Access Point | Must extend Wi‑Fi coverage from 5m to at least 100m |
+| TR‑WE02 | Outdoor AP Weatherproof Rating | IP65 or higher (rain, dust, sun protection) |
+| TR‑WE03 | Outdoor AP Standard | 802.11n or 802.11ac (2.4GHz or dual‑band) |
+| TR‑WE04 | Ethernet Cable | Cat5e or Cat6, minimum 100m length |
+| TR‑WE05 | Power Over Ethernet (PoE) | PoE injector included with AP (or purchased separately) |
+| TR‑WE06 | Mounting | Must be mountable on a pole, wall, or roof |
+| TR‑WE07 | Cable Protection | Cable must be protected from weather and physical damage |
+| TR‑WE08 | Outdoor AP Speed | Minimum 300 Mbps (2.4GHz) |
+| TR‑WE09 | Outdoor AP Range | Minimum 100m in open area |
+| TR‑WE10 | Customer Devices Supported | Minimum 15 concurrent users on outdoor AP |
+
+**Recommended Outdoor AP Models:**
+
+| Model | Price (TZS) | Features |
+|-------|-------------|----------|
+| WAVLINK AC1200 Outdoor AP | ~170,000 | IP67, AC1200, PoE, 100m+ range |
+| TP‑Link EAP211‑Bridge KIT | ~250,000 | Complete kit, weatherproof, 100m+ range |
+| Comfast CF‑EW74 | ~150,000 | High power, IP65, 100m+ range |
+| Ubiquiti NanoStation M2 | ~350,000 | Professional grade, 200m+ range |
+| MikroTik SXT Lite2 | ~180,000 | MikroTik compatible, 100m+ range |
+
+### 5.3 Software Requirements
 
 | ID | Requirement | Specification |
 |----|-------------|---------------|
@@ -173,7 +201,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | TR‑S08 | Version Control | GitHub |
 | TR‑S09 | Package Manager | npm or yarn |
 
-### 5.3 Network Requirements
+### 5.4 Network Requirements
 
 | ID | Requirement | Specification |
 |----|-------------|---------------|
@@ -182,10 +210,47 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | TR‑N03 | Public IP | Dynamic or static (for webhook callbacks) |
 | TR‑N04 | DNS | Stable DNS (Google: 8.8.8.8) |
 | TR‑N05 | Port Forwarding | Port 80/443 for web server, port 8728 for MikroTik API |
+| TR‑N06 | Outdoor AP Connection | Connected via Ethernet cable to MikroTik or main router |
 
 ---
 
-## 🔐 6. Security Requirements
+## 🏗️ 6. Wi‑Fi Range Extension Setup Requirements
+
+### 6.1 Physical Installation
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| WR‑01 | Outdoor AP must be mounted at least 3–5 meters high | High |
+| WR‑02 | Outdoor AP must be pointed toward the customer area | High |
+| WR‑03 | Ethernet cable must be secured with cable clips or ties | High |
+| WR‑04 | Cable must be protected from sharp edges and weather | High |
+| WR‑05 | Outdoor AP must be installed away from obstructions (trees, walls, metal) | High |
+| WR‑06 | Outdoor AP must have line‑of‑sight to the customer area | Medium |
+
+### 6.2 Configuration Requirements
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| WR‑C01 | Outdoor AP must be set to Access Point (AP) mode | High |
+| WR‑C02 | SSID must match the main network or be a dedicated outdoor network | High |
+| WR‑C03 | Wi‑Fi password must be set (WPA2‑PSK) | High |
+| WR‑C04 | Channel must be set to 1, 6, or 11 (2.4GHz) to avoid interference | High |
+| WR‑C05 | Country must be set to Tanzania (for regulatory compliance) | Medium |
+| WR‑C06 | Firmware must be updated to the latest version | Medium |
+
+### 6.3 Performance Requirements
+
+| ID | Requirement | Target |
+|----|-------------|--------|
+| WR‑P01 | Minimum signal strength at 100m | -70 dBm or higher |
+| WR‑P02 | Minimum internet speed at 100m | 10 Mbps download |
+| WR‑P03 | Ping latency at 100m | < 50ms |
+| WR‑P04 | Concurrent users on outdoor AP | 15–30 users |
+| WR‑P05 | Uptime | 99.9% |
+
+---
+
+## 🔐 7. Security Requirements
 
 | ID | Requirement | Priority |
 |----|-------------|----------|
@@ -199,12 +264,14 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | SR‑08 | Database queries must be parameterized (prevent SQL injection) | High |
 | SR‑09 | Admin endpoints (if any) must be password‑protected | Medium |
 | SR‑10 | MikroTik API should be accessible only from the backend server IP | Medium |
+| SR‑11 | Outdoor AP Wi‑Fi password must be strong (minimum 8 characters) | High |
+| SR‑12 | Guest network should be isolated from internal network | High |
 
 ---
 
-## 📦 7. Integration Requirements
+## 📦 8. Integration Requirements
 
-### 7.1 MikroTik API
+### 8.1 MikroTik API
 
 | ID | Requirement | Priority |
 |----|-------------|----------|
@@ -215,7 +282,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | IR‑M05 | API must support getting a list of active users | Medium |
 | IR‑M06 | API must support removing a user | Medium |
 
-### 7.2 SonicPesa Payment Gateway
+### 8.2 SonicPesa Payment Gateway
 
 | ID | Requirement | Priority |
 |----|-------------|----------|
@@ -226,7 +293,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | IR‑S05 | Backend must store transaction ID for reference | High |
 | IR‑S06 | Backend must retry on failed webhook delivery | Medium |
 
-### 7.3 WhatsApp Bot
+### 8.3 WhatsApp Bot
 
 | ID | Requirement | Priority |
 |----|-------------|----------|
@@ -236,7 +303,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | IR‑W04 | WhatsApp message must include a disclaimer not to share the code | High |
 | IR‑W05 | Backend must handle WhatsApp API failures gracefully | Medium |
 
-### 7.4 Database
+### 8.4 Database
 
 | ID | Requirement | Priority |
 |----|-------------|----------|
@@ -249,9 +316,9 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 
 ---
 
-## 🎨 8. User Interface Requirements
+## 🎨 9. User Interface Requirements
 
-### 8.1 Captive Portal Pages
+### 9.1 Captive Portal Pages
 
 | ID | Requirement | Priority |
 |----|-------------|----------|
@@ -265,7 +332,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | UI‑08 | Expired page must include a "Buy Again" button | High |
 | UI‑09 | All pages must include a footer with the copyright notice | Medium |
 
-### 8.2 Admin Dashboard (Future Enhancement)
+### 9.2 Admin Dashboard (Future Enhancement)
 
 | ID | Requirement | Priority |
 |----|-------------|----------|
@@ -276,7 +343,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 
 ---
 
-## 📊 9. Performance Requirements
+## 📊 10. Performance Requirements
 
 | ID | Requirement | Target |
 |----|-------------|--------|
@@ -286,12 +353,14 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | PR‑04 | Captive Portal page load | < 2 seconds |
 | PR‑05 | Concurrent users supported | Minimum 15, scalable to 100+ |
 | PR‑06 | Database query response time | < 100ms |
+| PR‑07 | Outdoor AP signal strength at 100m | -70 dBm or higher |
+| PR‑08 | Outdoor AP speed at 100m | Minimum 10 Mbps |
 
 ---
 
-## ⏰ 10. Business Requirements
+## ⏰ 11. Business Requirements
 
-### 10.1 Pricing Model
+### 11.1 Pricing Model
 
 | Package | Duration | Price (TZS) | Price (USD) |
 |---------|----------|-------------|-------------|
@@ -301,7 +370,7 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | Platinum | 12 Hours | 2,500 | ~$1.00 |
 | Diamond | 24 Hours | 4,000 | ~$1.60 |
 
-### 10.2 Revenue Projection
+### 11.2 Revenue Projection
 
 | Scenario | Daily Revenue | Monthly Revenue |
 |----------|---------------|-----------------|
@@ -309,17 +378,20 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | 20 customers/day (avg 1,500 TZS) | 30,000 TZS | 900,000 TZS (~$360) |
 | 30 customers/day (avg 1,500 TZS) | 45,000 TZS | 1,350,000 TZS (~$540) |
 
-### 10.3 Cost Breakdown (One‑Time)
+### 11.3 Cost Breakdown
+
+#### One‑Time Costs
 
 | Item | Cost (TZS) | Cost (USD) |
 |------|------------|------------|
 | MikroTik hAP ac2 | 250,000 | ~$100 |
+| Outdoor AP (WAVLINK AC1200) | 170,000 | ~$68 |
+| 100m Ethernet Cable (Cat5e) | 60,000 | ~$24 |
+| Cable Clips / Ties / Conduit | 10,000 | ~$4 |
 | Router + Cables | 50,000 | ~$20 |
-| **Total** | **300,000** | **~$120** |
+| **Total** | **~540,000 TZS** | **~$216** |
 
-**Payback Period:** 10–15 days (at 20 customers/day)
-
-### 10.4 Operating Costs (Monthly)
+#### Monthly Costs
 
 | Item | Cost (TZS) | Cost (USD) |
 |------|------------|------------|
@@ -328,22 +400,25 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | SonicPesa Fees | Transaction fee (1–3%) | Variable |
 | **Total** | **~50,000–100,000 TZS** | **~$20–40** |
 
+**Payback Period:** 15–20 days (at 20 customers/day)
+
 ---
 
-## 🗺️ 11. Project Timeline
+## 🗺️ 12. Project Timeline
 
 | Phase | Duration | Activities |
 |-------|----------|------------|
 | **Phase 1: Planning** | 1 Week | Requirements finalization, hardware procurement, architecture design |
-| **Phase 2: Setup & Configuration** | 1 Week | MikroTik configuration, Render account setup, database setup |
-| **Phase 3: Development** | 2 Weeks | Backend API development, frontend pages, integration with SonicPesa & WhatsApp |
-| **Phase 4: Testing** | 1 Week | Unit testing, integration testing, user acceptance testing (UAT) |
-| **Phase 5: Deployment** | 3 Days | Deploy to Render, configure MikroTik, go live |
-| **Total** | **~6 Weeks** | |
+| **Phase 2: Hardware Setup** | 1 Week | Install MikroTik, install Outdoor AP, run 100m cable |
+| **Phase 3: Configuration** | 1 Week | MikroTik configuration, Outdoor AP configuration, network testing |
+| **Phase 4: Development** | 2 Weeks | Backend API development, frontend pages, integration with SonicPesa & WhatsApp |
+| **Phase 5: Testing** | 1 Week | Unit testing, integration testing, user acceptance testing (UAT), range testing |
+| **Phase 6: Deployment** | 3 Days | Deploy to Render, configure MikroTik, go live |
+| **Total** | **~7 Weeks** | |
 
 ---
 
-## 📝 12. Assumptions
+## 📝 13. Assumptions
 
 | ID | Assumption |
 |----|------------|
@@ -353,11 +428,14 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | AS‑04 | MikroTik router is properly configured and connected to the internet |
 | AS‑05 | Render.com free tier is sufficient for the pilot project |
 | AS‑06 | The internet connection is stable and meets the minimum speed requirements |
-| AS‑07 | Customers are within range of the Wi‑Fi signal |
+| AS‑07 | Customers are within range of the Wi‑Fi signal (100m) |
+| AS‑08 | Outdoor AP has a clear line‑of‑sight to the customer area |
+| AS‑09 | The 100m Ethernet cable run is physically possible and safe |
+| AS‑10 | Weather conditions allow for outdoor AP installation |
 
 ---
 
-## ⚠️ 13. Risks and Mitigation
+## ⚠️ 14. Risks and Mitigation
 
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
@@ -369,10 +447,14 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | **Password sharing** | High | High | Use unique credentials per user (solved by OTP + MikroTik users) |
 | **Fraudulent payments** | Medium | Low | Use SonicPesa's secure payment system and verify webhooks |
 | **System overload** | Medium | Low | Monitor performance and scale as needed (Render's free tier handles 10–50 users) |
+| **Cable damage (weather/physical)** | Medium | Medium | Use protected cable (conduit) and cable clips |
+| **Outdoor AP failure** | Medium | Low | Mount AP securely, check weatherproofing, have spare AP on hand |
+| **Signal interference** | Medium | Low | Choose proper channel (1, 6, or 11), avoid obstructions |
+| **Range not reaching 100m** | Medium | Medium | Test thoroughly, adjust placement, consider higher‑gain AP |
 
 ---
 
-## ✅ 14. Success Criteria
+## ✅ 15. Success Criteria
 
 | Criterion | Metric |
 |-----------|--------|
@@ -382,10 +464,13 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | **Automatic expiry** | 100% of sessions expire on time |
 | **Customer satisfaction** | 90% of customers can connect without assistance |
 | **Revenue** | Revenue exceeds operating costs within the first month |
+| **Wi‑Fi range** | Wi‑Fi signal reaches 100m with -70 dBm or higher |
+| **Wi‑Fi speed** | Minimum 10 Mbps at 100m distance |
+| **Concurrent users** | Supports 15 concurrent users on outdoor AP |
 
 ---
 
-## 📦 15. Deliverables
+## 📦 16. Deliverables
 
 | Deliverable | Format |
 |-------------|--------|
@@ -393,13 +478,15 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | Backend API | Node.js + Express (deployed on Render) |
 | Database | PostgreSQL (on Render or Supabase) |
 | MikroTik Configuration | RouterOS scripts and configuration |
-| Documentation | README.md, API Reference, Deployment Guide |
+| Outdoor AP Configuration | AP configuration settings |
+| Network Diagram | Physical layout of router, cable, AP |
+| Documentation | README.md, API Reference, Deployment Guide, Setup Guide |
 | Source Code | GitHub repository |
 | Deployment | Render.com live URL |
 
 ---
 
-## 🧰 16. Tools and Resources
+## 🧰 17. Tools and Resources
 
 | Tool | Purpose |
 |------|---------|
@@ -411,10 +498,13 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | **MikroTik WinBox** | MikroTik configuration |
 | **SonicPesa Dashboard** | Payment configuration and monitoring |
 | **WhatsApp Business API** | OTP delivery (via bot) |
+| **Wi‑Fi Analyzer** | Check signal strength and channel interference |
+| **Cable Tester** | Test Ethernet cable connectivity |
+| **Speedtest** | Test internet speed at 100m |
 
 ---
 
-## 📌 17. Glossary
+## 📌 18. Glossary
 
 | Term | Definition |
 |------|------------|
@@ -428,10 +518,16 @@ To build a fully automated, time‑based Wi‑Fi hotspot billing system that all
 | **Webhook** | An HTTP callback that one system sends to another when an event occurs (e.g., payment confirmation) |
 | **RADIUS** | Remote Authentication Dial‑In User Service – a protocol for centralized authentication, authorization, and accounting (not used in this MVP) |
 | **limit-uptime** | A MikroTik HotSpot user parameter that defines the maximum time a user can be connected |
+| **Access Point (AP)** | A device that creates a Wi‑Fi network |
+| **Outdoor AP** | A weatherproof Access Point designed for outdoor use |
+| **PoE (Power over Ethernet)** | A technology that sends power and data through the same Ethernet cable |
+| **IP65 / IP67** | Ingress Protection ratings – IP65 is dust‑tight and water‑resistant; IP67 is dust‑tight and waterproof (immersion) |
+| **SSID** | Service Set Identifier – the name of a Wi‑Fi network |
+| **WPA2‑PSK** | Wi‑Fi Protected Access 2 – Pre‑Shared Key – a common Wi‑Fi security standard |
 
 ---
 
-## ✅ 18. Approval
+## ✅ 19. Approval
 
 | Role | Name | Signature | Date |
 |------|------|-----------|------|
