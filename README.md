@@ -1,160 +1,256 @@
-# biig
+# 📱 BIGST4CK WiFi – Customer Journey
 
+This document explains the complete experience of a customer using the **BIGST4CK WiFi Hotspot** system.
 
+---
 
-# 📁 Wi-Fi Hotspot Billing System – Project Structure
+## 🔄 Overview
+
+The customer connects to Wi-Fi, verifies their identity via OTP, selects a package, pays via SonicPesa, and gets instant internet access – all without typing any username or password.
+
+---
+
+## 📋 Step-by-Step Customer Journey
+
+### Step 1: Connect to Wi-Fi
+
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Opens Wi-Fi settings on phone | Sees available networks |
+| Selects **"BIGST4CK WiFi"** | Taps **"Connect"** |
+| (If password is set) Enters Wi-Fi password | `BIGST4CK@2026` |
+
+> ✅ **Connected to Wi-Fi, but NO internet access yet.**
+
+---
+
+### Step 2: Captive Portal Opens Automatically
+
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Phone detects no internet | Browser opens automatically |
+| Redirected to the portal page | Welcome screen appears |
 
 ```
-wifi-billing-system/
-│
-├── 📂 src/
-│   ├── 📂 config/
-│   │   └── database.js          # Database connection (PostgreSQL/MySQL)
-│   │
-│   ├── 📂 controllers/
-│   │   ├── portalController.js  # Captive Portal – show packages, handle selection
-│   │   ├── paymentController.js # Payment webhook – verify & process payments
-│   │   └── mikrotikController.js# MikroTik API – add/remove hotspot users
-│   │
-│   ├── 📂 models/
-│   │   ├── Package.js           # Package schema (name, duration, price)
-│   │   ├── Customer.js          # Customer schema (MAC, phone, email)
-│   │   ├── Session.js           # Session schema (start, end, status)
-│   │   └── Payment.js           # Payment schema (amount, status, reference)
-│   │
-│   ├── 📂 routes/
-│   │   ├── api.js               # API routes (/api/payment-webhook, /api/session-status)
-│   │   └── web.js               # Web routes (/portal, /success, /expired)
-│   │
-│   ├── 📂 services/
-│   │   └── mikrotikService.js   # MikroTik API communication logic
-│   │
-│   ├── 📂 views/                # EJS/Handlebars templates
-│   │   ├── portal.ejs           # Captive Portal page (packages + payment)
-│   │   ├── success.ejs          # Payment success page
-│   │   └── expired.ejs          # Session expired page
-│   │
-│   ├── 📂 public/               # Static assets
-│   │   ├── 📂 css/
-│   │   │   └── style.css        # Main stylesheet
-│   │   └── 📂 js/
-│   │       └── main.js          # Frontend JavaScript
-│   │
-│   ├── 📂 utils/
-│   │   ├── logger.js            # Logging utility
-│   │   └── helpers.js           # Helper functions (time calculation, etc.)
-│   │
-│   └── app.js                   # Express app entry point
-│
-├── 📂 database/                 # SQL migrations / seeders
-│   └── schema.sql               # Database schema
-│
-├── 📄 .env                      # Environment variables (NOT committed)
-├── 📄 .gitignore                # Git ignore file
-├── 📄 package.json              # Node.js dependencies & scripts
-├── 📄 README.md                 # Project documentation
-└── 📄 render.yaml               # Render.com deployment config (optional)
+┌─────────────────────────────────┐
+│  📶 BIGST4CK WiFi               │
+│                                 │
+│  Karibu! Weka namba yako ya     │
+│  simu kuanza.                   │
+│                                 │
+│  ┌──────────────────────────┐  │
+│  │ 255_______________       │  │
+│  └──────────────────────────┘  │
+│                                 │
+│  [ 🔐 Tuma Msimbo ]             │
+└─────────────────────────────────┘
 ```
 
+---
 
+### Step 3: Enter Phone Number
 
-# 🧩 Wi-Fi Hotspot Billing System – Components List
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Types phone number | `255705517165` |
+| Taps **"Tuma Msimbo"** | "Sending code..." message appears |
 
-## 🔢 5 MAIN LAYERS
+> ✅ **OTP request sent to the backend.**
 
 ---
 
-### ✅ 1. LOCAL HARDWARE (Mbeya – Physical)
+### Step 4: Receive OTP via WhatsApp
 
-| # | Component | Description |
-|---|-----------|-------------|
-| 1 | Internet Provider Router/Modem | Brings internet connection into the building. |
-| 2 | MikroTik Router (hAP ac2) | The brain of the system. Provides Wi‑Fi, captive portal, user sessions, and automatic disconnection. |
-| 3 | Access Point (Optional) | For wider Wi‑Fi coverage. For pilot (10‑15 users), built‑in Wi‑Fi is enough. |
-| 4 | Customer Devices | Smartphones, laptops, tablets connecting to the Wi‑Fi. |
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Check WhatsApp | Receives message from BIGST4CK bot |
 
----
+```
+🔐 *BIGST4CK WiFi*
 
-### ✅ 2. LOCAL NETWORK (Mbeya – MikroTik)
+Msimbo wako wa kuthibitisha:
 
-| # | Component | Description |
-|---|-----------|-------------|
-| 5 | Wi‑Fi SSID | Network name customers see (e.g., "MAC WiFi"). |
-| 6 | HotSpot Service | Intercepts unauthenticated users and forces captive portal. |
-| 7 | Captive Portal (Redirect) | Redirects users to your external cloud website. |
-| 8 | Walled Garden | Allows access to your cloud portal URL before authentication. |
-| 9 | HotSpot User Database | Local list of active users with time limits. |
+*4821*
 
----
+Msimbo huu ni halali kwa dakika 5 tu.
+Usimshirikishe mtu yeyote.
 
-### ✅ 3. CLOUD INFRASTRUCTURE (Render.com – Global)
+© BIGST4CK
+```
 
-| # | Component | Description |
-|---|-----------|-------------|
-| 10 | Render Web Service | Hosts your Node.js/PHP application. Provides public URL. |
-| 11 | PostgreSQL / MySQL Database | Stores customers, packages, sessions, payments, logs. |
-| 12 | Environment Variables (.env) | Stores secrets: MikroTik IP, password, API keys, database URL. |
-| 13 | SSL Certificate (HTTPS) | Encrypts all traffic. Provided automatically by Render. |
-| 14 | Public URL | The link customers use to access the captive portal. |
+> ✅ **OTP delivered within 2–5 seconds.**
 
 ---
 
-### ✅ 4. APPLICATION SOFTWARE (Cloud – Your Code)
+### Step 5: Enter OTP
 
-| # | Component | Description |
-|---|-----------|-------------|
-| 15 | Captive Portal (Web Page) | Displays time packages (1h, 3h, 6h, 12h, 24h). |
-| 16 | Backend API Server | Processes payment confirmations, calculates expiry times. |
-| 17 | Payment Webhook Handler | Receives "success" signal from your payment system. |
-| 18 | MikroTik API Client | Sends commands to MikroTik (add user, set time limit). |
-| 19 | Session Timer / Expiry Logic | Calculates exact end time (e.g., 14:00 + 6h = 20:00). |
-| 20 | Admin Dashboard (Optional) | View active sessions, manually manage users. |
-| 21 | Logging & Monitoring | Records all transactions, errors, and events. |
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Enters 6‑digit code | `4 8 2 1 _ _` |
+| Taps **"Thibitisha"** | Code is verified |
 
----
+```
+┌─────────────────────────────────┐
+│  📶 BIGST4CK WiFi               │
+│                                 │
+│  Weka msimbo wa tarakimu 6:     │
+│                                 │
+│  ┌──────────────────────────┐  │
+│  │ 4 8 2 1 3 7              │  │
+│  └──────────────────────────┘  │
+│                                 │
+│  [ ✅ Thibitisha ]               │
+└─────────────────────────────────┘
+```
 
-### ✅ 5. EXTERNAL INTEGRATIONS (Global)
-
-| # | Component | Description |
-|---|-----------|-------------|
-| 22 | Your Existing Payment System | Sends webhook to your backend when payment succeeds. |
-| 23 | Payment Gateway (e.g., SonicPesa) | Processes the customer's money. |
-| 24 | Admin Access (Anywhere) | You can manage the system from Dodoma, Mbeya, or abroad. |
-| 25 | GitHub Repository | Stores all code. Auto‑deploys to Render. |
-| 26 | ISP Internet Connection | Provides internet to the MikroTik. Must allow hotspot/resale for commercial use. |
-
----
-
-## ✅ TOTAL: 26 COMPONENTS
-
-| Layer | Count |
-|-------|-------|
-| 1. Local Hardware | 4 |
-| 2. Local Network | 5 |
-| 3. Cloud Infrastructure | 5 |
-| 4. Application Software | 7 |
-| 5. External Integrations | 5 |
-| **TOTAL** | **26** |
+> ✅ **OTP verified – customer moves to package selection.**
 
 ---
 
-## 📌 KEY INTEGRATION POINTS
+### Step 6: Select Package
 
-1. **MikroTik ↔ Cloud Backend** – via RouterOS API (port 8728)
-2. **Customer ↔ Captive Portal** – via HTTPS (Render URL)
-3. **Payment System ↔ Backend** – via Webhook (POST request)
-4. **Backend ↔ Database** – via SQL (PostgreSQL/MySQL)
-5. **Admin ↔ Render Dashboard** – via Browser (Anywhere)
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Views available packages | List of plans with prices |
+| Selects desired package | Taps on the chosen plan |
+
+```
+┌─────────────────────────────────┐
+│  📶 BIGST4CK WiFi               │
+│                                 │
+│  Chagua pakiti yako:            │
+│                                 │
+│  ┌──────────────────────────┐  │
+│  │ 🕐 Saa 1   – 500 TZS     │  │
+│  ├──────────────────────────┤  │
+│  │ 🕒 Saa 3   – 1,000 TZS   │  │
+│  ├──────────────────────────┤  │
+│  │ 🕕 Saa 6   – 1,500 TZS   │  │
+│  ├──────────────────────────┤  │
+│  │ 🕛 Saa 12  – 2,500 TZS   │  │
+│  ├──────────────────────────┤  │
+│  │ 🕐 Saa 24  – 4,000 TZS   │  │
+│  └──────────────────────────┘  │
+└─────────────────────────────────┘
+```
+
+> ✅ **Package selected – payment process begins.**
 
 ---
 
-## 🚀 DEPLOYMENT SUMMARY
+### Step 7: Pay via SonicPesa
 
-| Step | Action |
-|------|--------|
-| 1 | Push code to GitHub |
-| 2 | Connect GitHub to Render.com |
-| 3 | Set environment variables |
-| 4 | Deploy web service |
-| 5 | Configure MikroTik to redirect to Render URL |
-| 6 | Test with real customer device |
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Payment is initiated | "Processing payment..." message |
+| Phone receives USSD prompt | USSD screen opens automatically |
+| Enters PIN to confirm | Authorizes the payment |
+
+```
+┌─────────────────────────────────┐
+│  📶 BIGST4CK WiFi               │
+│                                 │
+│  ⏳ Inachakata malipo yako...   │
+│                                 │
+│  Tafadhali angalia simu yako.   │
+│  Utapokea taarifa ya USSD.      │
+│                                 │
+│  Ingiza PIN yako kuthibitisha.  │
+└─────────────────────────────────┘
+```
+
+> ✅ **Payment processed within 10–25 seconds.**
+
+---
+
+### Step 8: Internet Access Granted
+
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Payment is confirmed | Success screen appears |
+| Internet is activated | Browsing works immediately |
+
+```
+┌─────────────────────────────────┐
+│  📶 BIGST4CK WiFi               │
+│                                 │
+│  🎉 *UMEFANIKIWA!* 🎉           │
+│                                 │
+│  Umeunganishwa kwenye intaneti!  │
+│                                 │
+│  ⏱️ Muda: Saa 6                 │
+│  ⏳ Inaisha: 20:00              │
+│                                 │
+│  🌐 Furahia kutumia intaneti!    │
+└─────────────────────────────────┘
+```
+
+> ✅ **Customer can now browse, stream, and download.**
+
+---
+
+### Step 9: Session Expiry (Automatic)
+
+| Action | What the Customer Sees |
+|--------|------------------------|
+| Time purchased expires | MikroTik automatically disconnects |
+| Customer tries to browse | Redirected to Captive Portal |
+
+```
+┌─────────────────────────────────┐
+│  📶 BIGST4CK WiFi               │
+│                                 │
+│  ⏰ Muda wako umekwisha!         │
+│                                 │
+│  Nunua pakiti tena kuendelea.   │
+│                                 │
+│  [ 🛒 Nunua Sasa ]               │
+└─────────────────────────────────┘
+```
+
+> ✅ **Customer can purchase another package to continue.**
+
+---
+
+## 📊 Summary Table
+
+| Step | Customer Action | System Action | Time |
+|------|-----------------|---------------|------|
+| 1 | Connects to Wi-Fi | Grants Wi-Fi connection | < 5s |
+| 2 | Sees Captive Portal | Redirects to portal | < 2s |
+| 3 | Enters phone number | Sends OTP request | < 2s |
+| 4 | Receives OTP | Sends WhatsApp message | 2–5s |
+| 5 | Enters OTP | Verifies and authenticates | < 2s |
+| 6 | Selects package | Prepares payment | < 2s |
+| 7 | Pays via USSD | Processes payment | 10–25s |
+| 8 | Gets internet access | Creates MikroTik user | < 2s |
+| 9 | Session expires | Disconnects automatically | On expiry |
+
+---
+
+## 🎯 Key Points
+
+| Question | Answer |
+|----------|--------|
+| **Does customer need a username/password?** | ❌ **NO** – only phone number and OTP |
+| **Does internet work immediately after payment?** | ✅ **YES** – within 2–5 seconds |
+| **Is the customer disconnected automatically?** | ✅ **YES** – when time expires |
+| **Can the customer reuse the same OTP?** | ❌ **NO** – OTP is one‑time and expires in 5 minutes |
+| **Does the customer need to reconnect to Wi-Fi?** | ❌ **NO** – stays connected, just loses internet access |
+
+---
+
+## 📌 Legend
+
+| Icon | Meaning |
+|------|---------|
+| 📶 | Wi‑Fi connection |
+| 🔐 | Security / Authentication |
+| 💳 | Payment |
+| ✅ | Success |
+| ⏰ | Time / Expiry |
+| 🌐 | Internet access |
+
+---
+
+**© 2026 BIGST4CK by bigmanjtech™**
