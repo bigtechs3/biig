@@ -1,256 +1,208 @@
-# 📱 BIGST4CK WiFi – Customer Journey
+# 📶 BIGST4CK Wi‑Fi Hotspot Billing System
 
-This document explains the complete experience of a customer using the **BIGST4CK WiFi Hotspot** system.
+## 🎯 Overview
 
----
-
-## 🔄 Overview
-
-The customer connects to Wi-Fi, verifies their identity via OTP, selects a package, pays via SonicPesa, and gets instant internet access – all without typing any username or password.
+BIGST4CK is a complete, turnkey solution for selling **time‑based Wi‑Fi access** in small businesses, cafes, hotels, and public spaces. Customers connect to Wi‑Fi, authenticate via OTP, select a package, pay through SonicPesa, and get instant internet access – **all without typing a username or password.**
 
 ---
 
-## 📋 Step-by-Step Customer Journey
+## 🧠 The Problem We Solve
 
-### Step 1: Connect to Wi-Fi
-
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Opens Wi-Fi settings on phone | Sees available networks |
-| Selects **"BIGST4CK WiFi"** | Taps **"Connect"** |
-| (If password is set) Enters Wi-Fi password | `BIGST4CK@2026` |
-
-> ✅ **Connected to Wi-Fi, but NO internet access yet.**
+| Issue | Our Solution |
+|-------|--------------|
+| ❌ Password sharing (one person pays, 10 people use it) | ✅ Unique credentials per customer |
+| ❌ Manual user management | ✅ Fully automated (MikroTik + backend) |
+| ❌ No expiry tracking | ✅ Automatic disconnection when time expires |
+| ❌ Hard to scale | ✅ Built for 10 to 10,000 users |
+| ❌ Complicated for customers | ✅ Just phone number + OTP + payment |
 
 ---
 
-### Step 2: Captive Portal Opens Automatically
-
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Phone detects no internet | Browser opens automatically |
-| Redirected to the portal page | Welcome screen appears |
-
-```
-┌─────────────────────────────────┐
-│  📶 BIGST4CK WiFi               │
-│                                 │
-│  Karibu! Weka namba yako ya     │
-│  simu kuanza.                   │
-│                                 │
-│  ┌──────────────────────────┐  │
-│  │ 255_______________       │  │
-│  └──────────────────────────┘  │
-│                                 │
-│  [ 🔐 Tuma Msimbo ]             │
-└─────────────────────────────────┘
+## 🏗️ System Architecture
 ```
 
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           BIGST4CK SYSTEM                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐                  │
+│  │   Customer  │────▶│  MikroTik   │────▶│   Portal    │                  │
+│  │   (Phone)   │     │   Router    │     │  (Website)  │                  │
+│  └─────────────┘     └─────────────┘     └─────────────┘                  │
+│                           │                      │                         │
+│                           ▼                      ▼                         │
+│                    ┌─────────────┐     ┌─────────────┐                     │
+│                    │  Backend    │◀────│   Payment   │                     │
+│                    │  (Node.js)  │     │  SonicPesa  │                     │
+│                    └─────────────┘     └─────────────┘                     │
+│                           │                      │                         │
+│                           ▼                      │                         │
+│                    ┌─────────────┐               │                         │
+│                    │  Database   │               │                         │
+│                    │ PostgreSQL  │               │                         │
+│                    └─────────────┘               │                         │
+│                                                  │                         │
+│                    ┌─────────────┐               │                         │
+│                    │  WhatsApp   │               │                         │
+│                    │  Bot (OTP)  │               │                         │
+│                    └─────────────┘               │                         │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+```
+
 ---
+
+## 🔧 Technology Stack
+
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Frontend** | HTML5, CSS3, Vanilla JS | Captive Portal pages |
+| **Backend** | Node.js + Express.js | API, OTP, payment, MikroTik logic |
+| **Database** | PostgreSQL | Stores customers, sessions, payments |
+| **Router** | MikroTik (hAP ac2) | Wi‑Fi, HotSpot, user management |
+| **Payment** | SonicPesa | USSD payment processing |
+| **OTP Delivery** | WhatsApp Bot | Send verification codes |
+| **Hosting** | Render.com | Cloud hosting (free tier available) |
+
+---
+
+## 📱 Customer Journey (Full Flow)
+
+### Step 1: Connect to Wi‑Fi
+Customer opens Wi‑Fi settings → selects **"BIGST4CK WiFi"** → connects.
+
+### Step 2: Captive Portal Opens
+Phone automatically opens the portal page asking for a phone number.
 
 ### Step 3: Enter Phone Number
+Customer types their number (e.g., `255705517165`) and taps **"Send Code"**.
 
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Types phone number | `255705517165` |
-| Taps **"Tuma Msimbo"** | "Sending code..." message appears |
-
-> ✅ **OTP request sent to the backend.**
-
----
-
-### Step 4: Receive OTP via WhatsApp
-
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Check WhatsApp | Receives message from BIGST4CK bot |
-
-```
-🔐 *BIGST4CK WiFi*
-
-Msimbo wako wa kuthibitisha:
-
-*4821*
-
-Msimbo huu ni halali kwa dakika 5 tu.
-Usimshirikishe mtu yeyote.
-
-© BIGST4CK
-```
-
-> ✅ **OTP delivered within 2–5 seconds.**
-
----
+### Step 4: Receive OTP
+WhatsApp bot sends a 6‑digit code: `4821` (valid for 5 minutes).
 
 ### Step 5: Enter OTP
-
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Enters 6‑digit code | `4 8 2 1 _ _` |
-| Taps **"Thibitisha"** | Code is verified |
-
-```
-┌─────────────────────────────────┐
-│  📶 BIGST4CK WiFi               │
-│                                 │
-│  Weka msimbo wa tarakimu 6:     │
-│                                 │
-│  ┌──────────────────────────┐  │
-│  │ 4 8 2 1 3 7              │  │
-│  └──────────────────────────┘  │
-│                                 │
-│  [ ✅ Thibitisha ]               │
-└─────────────────────────────────┘
-```
-
-> ✅ **OTP verified – customer moves to package selection.**
-
----
+Customer enters the code on the portal and taps **"Verify"**.
 
 ### Step 6: Select Package
+Customer chooses a package:
 
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Views available packages | List of plans with prices |
-| Selects desired package | Taps on the chosen plan |
-
-```
-┌─────────────────────────────────┐
-│  📶 BIGST4CK WiFi               │
-│                                 │
-│  Chagua pakiti yako:            │
-│                                 │
-│  ┌──────────────────────────┐  │
-│  │ 🕐 Saa 1   – 500 TZS     │  │
-│  ├──────────────────────────┤  │
-│  │ 🕒 Saa 3   – 1,000 TZS   │  │
-│  ├──────────────────────────┤  │
-│  │ 🕕 Saa 6   – 1,500 TZS   │  │
-│  ├──────────────────────────┤  │
-│  │ 🕛 Saa 12  – 2,500 TZS   │  │
-│  ├──────────────────────────┤  │
-│  │ 🕐 Saa 24  – 4,000 TZS   │  │
-│  └──────────────────────────┘  │
-└─────────────────────────────────┘
-```
-
-> ✅ **Package selected – payment process begins.**
-
----
+| Package | Price (TZS) |
+|---------|-------------|
+| 1 Hour  | 500 |
+| 3 Hours | 1,000 |
+| 6 Hours | 1,500 |
+| 12 Hours| 2,500 |
+| 24 Hours| 4,000 |
 
 ### Step 7: Pay via SonicPesa
+Customer receives a USSD prompt on their phone and enters their PIN to complete payment.
 
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Payment is initiated | "Processing payment..." message |
-| Phone receives USSD prompt | USSD screen opens automatically |
-| Enters PIN to confirm | Authorizes the payment |
+### Step 8: Internet Access (Instant!)
+Backend creates a unique user on MikroTik with the purchased time limit – **internet works immediately!**
 
-```
-┌─────────────────────────────────┐
-│  📶 BIGST4CK WiFi               │
-│                                 │
-│  ⏳ Inachakata malipo yako...   │
-│                                 │
-│  Tafadhali angalia simu yako.   │
-│  Utapokea taarifa ya USSD.      │
-│                                 │
-│  Ingiza PIN yako kuthibitisha.  │
-└─────────────────────────────────┘
-```
-
-> ✅ **Payment processed within 10–25 seconds.**
+### Step 9: Session Expires
+When time runs out, MikroTik automatically disconnects the customer. They can buy more time by repeating the process.
 
 ---
 
-### Step 8: Internet Access Granted
+## 🔄 Technical Flow (Behind the Scenes)
 
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Payment is confirmed | Success screen appears |
-| Internet is activated | Browsing works immediately |
-
-```
-┌─────────────────────────────────┐
-│  📶 BIGST4CK WiFi               │
-│                                 │
-│  🎉 *UMEFANIKIWA!* 🎉           │
-│                                 │
-│  Umeunganishwa kwenye intaneti!  │
-│                                 │
-│  ⏱️ Muda: Saa 6                 │
-│  ⏳ Inaisha: 20:00              │
-│                                 │
-│  🌐 Furahia kutumia intaneti!    │
-└─────────────────────────────────┘
-```
-
-> ✅ **Customer can now browse, stream, and download.**
+| Step | Action | Who Does It |
+|------|--------|-------------|
+| 1 | Customer connects to Wi‑Fi | Customer |
+| 2 | MikroTik redirects to portal | MikroTik |
+| 3 | Customer enters phone number | Customer |
+| 4 | Backend generates OTP and sends via WhatsApp | Backend + WhatsApp Bot |
+| 5 | Customer enters OTP | Customer |
+| 6 | Backend verifies OTP | Backend |
+| 7 | Customer selects package | Customer |
+| 8 | Customer pays via USSD | Customer + SonicPesa |
+| 9 | SonicPesa sends webhook | SonicPesa |
+| 10 | Backend creates MikroTik user | Backend + MikroTik API |
+| 11 | MikroTik grants internet access | MikroTik |
+| 12 | MikroTik disconnects after time expires | MikroTik |
 
 ---
 
-### Step 9: Session Expiry (Automatic)
+## 🔐 Security Features
 
-| Action | What the Customer Sees |
-|--------|------------------------|
-| Time purchased expires | MikroTik automatically disconnects |
-| Customer tries to browse | Redirected to Captive Portal |
-
-```
-┌─────────────────────────────────┐
-│  📶 BIGST4CK WiFi               │
-│                                 │
-│  ⏰ Muda wako umekwisha!         │
-│                                 │
-│  Nunua pakiti tena kuendelea.   │
-│                                 │
-│  [ 🛒 Nunua Sasa ]               │
-└─────────────────────────────────┘
-```
-
-> ✅ **Customer can purchase another package to continue.**
+| Feature | How It Works |
+|---------|--------------|
+| **OTP** | 6‑digit code, expires in 5 minutes, one‑time use |
+| **Unique Credentials** | Each payment creates a unique MikroTik user |
+| **No Sharing** | Credentials are tied to the customer's phone number |
+| **Automatic Expiry** | MikroTik's `limit-uptime` disconnects automatically |
+| **No MAC Address Dependency** | Uses phone number as primary identifier (handles MAC randomization) |
 
 ---
 
-## 📊 Summary Table
+## 📁 Database Schema
 
-| Step | Customer Action | System Action | Time |
-|------|-----------------|---------------|------|
-| 1 | Connects to Wi-Fi | Grants Wi-Fi connection | < 5s |
-| 2 | Sees Captive Portal | Redirects to portal | < 2s |
-| 3 | Enters phone number | Sends OTP request | < 2s |
-| 4 | Receives OTP | Sends WhatsApp message | 2–5s |
-| 5 | Enters OTP | Verifies and authenticates | < 2s |
-| 6 | Selects package | Prepares payment | < 2s |
-| 7 | Pays via USSD | Processes payment | 10–25s |
-| 8 | Gets internet access | Creates MikroTik user | < 2s |
-| 9 | Session expires | Disconnects automatically | On expiry |
+### `customers`
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | SERIAL | Primary key |
+| `phone` | VARCHAR(15) | Unique phone number |
+| `created_at` | TIMESTAMP | Registration time |
+
+### `otps`
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | SERIAL | Primary key |
+| `phone` | VARCHAR(15) | Phone number linked to this OTP |
+| `code` | VARCHAR(6) | 6‑digit code |
+| `expires_at` | TIMESTAMP | Expiry time (5 minutes) |
+| `used` | BOOLEAN | Whether the code has been used |
+
+### `packages`
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | SERIAL | Primary key |
+| `name` | VARCHAR(50) | e.g., "1 Hour" |
+| `duration_hours` | INTEGER | 1, 3, 6, 12, 24 |
+| `price` | DECIMAL(10,2) | Price in TZS |
+
+### `sessions`
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | SERIAL | Primary key |
+| `customer_id` | INTEGER | Foreign key to customers |
+| `package_id` | INTEGER | Foreign key to packages |
+| `start_time` | TIMESTAMP | When the session started |
+| `end_time` | TIMESTAMP | When the session expires |
+| `active` | BOOLEAN | Whether the session is active |
+| `mikrotik_username` | VARCHAR(50) | Username created on MikroTik |
+| `mikrotik_password` | VARCHAR(50) | Password for logging |
+
+### `payments`
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | SERIAL | Primary key |
+| `session_id` | INTEGER | Foreign key to sessions |
+| `amount` | DECIMAL(10,2) | Amount paid |
+| `status` | VARCHAR(20) | `PENDING`, `SUCCESS`, `FAILED` |
+| `transaction_id` | VARCHAR(100) | SonicPesa transaction reference |
+| `created_at` | TIMESTAMP | Payment initiation time |
+| `confirmed_at` | TIMESTAMP | When payment was confirmed |
 
 ---
 
-## 🎯 Key Points
+## 🛠️ MikroTik Setup (Quick Reference)
 
-| Question | Answer |
-|----------|--------|
-| **Does customer need a username/password?** | ❌ **NO** – only phone number and OTP |
-| **Does internet work immediately after payment?** | ✅ **YES** – within 2–5 seconds |
-| **Is the customer disconnected automatically?** | ✅ **YES** – when time expires |
-| **Can the customer reuse the same OTP?** | ❌ **NO** – OTP is one‑time and expires in 5 minutes |
-| **Does the customer need to reconnect to Wi-Fi?** | ❌ **NO** – stays connected, just loses internet access |
+```bash
+# Enable HotSpot
+/ip hotspot setup
 
----
+# Create HotSpot user (done automatically by backend)
+/ip hotspot user add name=customer_255705517165 password=X9kL2mPq limit-uptime=6h
 
-## 📌 Legend
+# Set HotSpot profile to redirect to external portal
+/ip hotspot profile set [find] login-by=http-chap
 
-| Icon | Meaning |
-|------|---------|
-| 📶 | Wi‑Fi connection |
-| 🔐 | Security / Authentication |
-| 💳 | Payment |
-| ✅ | Success |
-| ⏰ | Time / Expiry |
-| 🌐 | Internet access |
+# Enable API
+/ip service enable api
+/ip service set api port=8728
 
----
-
-**© 2026 BIGST4CK by bigmanjtech™**
+# Add portal URL to walled garden
+/ip hotspot walled-garden ip add dst-address=YOUR_RENDER_IP
